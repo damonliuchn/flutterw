@@ -76,7 +76,7 @@ else
         # 下载 某些 Flutter assets
         $flutter_command doctor
         echo "Change version success"
-        execCommand $*
+        execFlutter $*
     else
         echo "Change version failed"
     fi
