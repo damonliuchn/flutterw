@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-download_dir=".flutter"
+
+flutter_channel="beta"
+flutter_version="1.14.6"
 distribution_url="https://gitee.com/mirrors/Flutter.git"
 #https://github.com/flutter/flutter.git 如果下载太慢可以使用 https://gitee.com/mirrors/Flutter.git
-flutter_channel="stable"
-flutter_version="1.12.13+hotfix.8"
+
+bash_path=$(cd `dirname $0`; pwd) # work_path=$(pwd)
+download_dir="$bash_path/.flutter"
 
 # 初始化命令
 export PUB_HOSTED_URL=https://pub.flutter-io.cn
@@ -67,6 +70,7 @@ then
     execFlutter $*
 else
     echo "===Current version：$curFlutterVersion，Target version：$flutter_version"
+    (cd $download_dir && git reset --hard HEAD)
     $flutter_command channel $flutter_channel
     $flutter_command upgrade
     $flutter_command version -f "v$flutter_version"
