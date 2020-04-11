@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 flutter_channel="beta"
-flutter_version="1.14.6"
+flutter_version="1.15.3"
 distribution_url="https://gitee.com/mirrors/Flutter.git"
 #https://github.com/flutter/flutter.git 如果下载太慢可以使用 https://gitee.com/mirrors/Flutter.git
 
@@ -43,7 +43,7 @@ handleSDK() {
     echo "===SDK handle success：$curFlutterVersion"
 }
 
-# 下载
+# 下载 https://ec2-13-250-177-223.ap-southeast-1.compute.amazonaws.com
 if [ ! -d $download_dir ]
 then
     echo "===Create $download_dir dir"
@@ -72,8 +72,11 @@ else
     echo "===Current version：$curFlutterVersion，Target version：$flutter_version"
     (cd $download_dir && git reset --hard HEAD)
     $flutter_command channel $flutter_channel
-    $flutter_command upgrade
-    $flutter_command version -f "v$flutter_version"
+	echo "===Upgrading"
+    $flutter_command upgrade -f
+	echo "===Downgrading"
+    $flutter_command downgrade "v$flutter_version"
+	echo "===Downgraded"
     # 判断切换版本是否成功
     curFlutterVersion=`$flutter_command --version | grep '^Flutter' | cut -d ' ' -f2`
     if [ $curFlutterVersion == $flutter_version ]
