@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-flutter_channel="beta"
-flutter_version="1.15.3"
-distribution_url="https://gitee.com/mirrors/Flutter.git"
-#https://github.com/flutter/flutter.git 如果下载太慢可以使用 https://gitee.com/mirrors/Flutter.git
+flutter_version="1.15.17"
+#版本查询地址：https://flutter.cn/docs/development/tools/sdk/releases
+distribution_url="https://github.com/flutter/flutter.git"
+#git地址：https://github.com/flutter/flutter.git 如果下载太慢可以使用 https://gitee.com/mirrors/Flutter.git
+flutter_channel="master"
+#master分支上version tag是最全的
 
 bash_path=$(cd `dirname $0`; pwd) # work_path=$(pwd)
 download_dir="$bash_path/.flutter"
@@ -70,24 +72,29 @@ then
     execFlutter $*
 else
     echo "===Current version：$curFlutterVersion，Target version：$flutter_version"
+	################################################################ 切换channel
     (cd $download_dir && git reset --hard HEAD)
     $flutter_command channel $flutter_channel
-	echo "===Upgrading"
-    $flutter_command upgrade -f
-	echo "===Downgrading"
-    $flutter_command downgrade "v$flutter_version"
-	echo "===Downgraded"
+	#echo "===Upgrading"
+    #$flutter_command upgrade -f
+	################################################################ 切换版本
+	echo "===Checkout version"
+	(cd $download_dir && git reset --hard HEAD)
+	(cd $download_dir && git checkout "v$flutter_version")
+    #$flutter_command downgrade "v$flutter_version"
+	echo "===Checkout version done"
+	################################################################
+	# 预处理SDK
+	handleSDK
     # 判断切换版本是否成功
     curFlutterVersion=`$flutter_command --version | grep '^Flutter' | cut -d ' ' -f2`
     if [ $curFlutterVersion == $flutter_version ]
     then
-        handleSDK
         execFlutter $*
     else
         echo "===Change version failed"
     fi
 fi
-
 # 备注
 # 获取某个命令的返回值 使用 STR=$(uname) 或者 STR=`uname`
 # 变量赋值等号前后不能有空格 如 STR="123"
